@@ -83,29 +83,22 @@ var handleGameOver = function() {
         };
     };
 
-    // let nextBtn = document.getElementById('nextBtn');
+    
     nextBtn.onclick = function() {
-        // let endPopup = document.getElementById('endPopup');
-        endPopup.style.display = 'block';
         
-        // let restartPopup = document.getElementById('restartPopup');
+        endPopup.style.display = 'block';   
         restartPopup.style.display = 'none';
         
-        // let okBtn = document.getElementById('okBtn');
         okBtn.onclick = function() {
             location.reload();
         };
     };
 
-    //let noBtn = document.getElementById('noBtn');
     noBtn.onclick = function() {
-    //let noticePopup = document.getElementById('noticePopup');
-    noticePopup.style.display = "flex";
 
-    //let endPopup = document.getElementById('endPopup');
+    noticePopup.style.display = "flex";
     endPopup.style.display = "none";
 
-    //let gameStartBtn = document.getElementById('gameStartBtn');
         gameStartBtn.onclick = function() {
             // 게임 재시작 알림 팝업을 숨깁니다.
             noticePopup.style.display = "none";
