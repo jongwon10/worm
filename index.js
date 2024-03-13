@@ -27,18 +27,29 @@ var isFirstGame = true;
 
 // 저장된 로컬호스트의 높은 점수를 나타냄.
 var bestScore = localStorage.getItem("best-score") || 0;
-bestScoreElement.innerText = `Best Score: ${bestScore}`;
+bestScoreElement.innerText = "Best Score: " + bestScore;
 
-startBtn.addEventListener('click', function() {
-    startPopup.style.display = "none";
-    noticePopup.style.display = "flex";
+// startBtn.addEventListener('click', function() {
+//     startPopup.style.display = "none";
+//     noticePopup.style.display = "flex";
+// });
+
+$(document).ready(function() {
+    $("#startBtn").click(function() {
+        console.log("startBtn click");
+        $("#startPopup").css("display", "none");
+        $("#noticePopup").css("display", "block");
+    });
 });
 
 gameStartBtn.addEventListener('click', function() {
+    console.log("gameStartBtn click");
     document.getElementById('noticePopup').style.display = "none";
     startGame(isFirstGame);
+    initGame();
     isFirstGame = false;
-    console.log("게임 시작");
+    console.log("게임 시작48");
+    console.log("게임 시작49");
 });
 
 var startGame = function(isFirstGame) {
@@ -167,18 +178,40 @@ var changeFoodPosition = function() {
 }
 
 // 방향키
+// function changeDirection(e) {
+//     e = e || window.event;
+//     var keyCode = e.keyCode || e.which; // keyCode를 통해 키 코드를 가져옵니다.
+//     // 방향키를 누르면 한 칸 이동하는 이벤트 함수
+//     if(e.key === "ArrowUp" && velocityY != 1) {
+//         velocityX = 0;
+//         velocityY = -1;
+//     } else if(e.key === "ArrowDown" && velocityY != -1) {
+//         velocityX = 0;
+//         velocityY = 1;
+//     } else if(e.key === "ArrowLeft" && velocityX != 1) {
+//         velocityX = -1;
+//         velocityY = 0;
+//     } else if(e.key === "ArrowRight" && velocityX != -1) {
+//         velocityX = 1;
+//         velocityY = 0;
+//     }
+// }
+
 function changeDirection(e) {
+    e = e || window.event;
+    var keyCode = e.keyCode || e.which;
+
     // 방향키를 누르면 한 칸 이동하는 이벤트 함수
-    if(e.key === "ArrowUp" && velocityY != 1) {
+    if (keyCode === 38 && velocityY != 1) { // 화살표 위 키
         velocityX = 0;
         velocityY = -1;
-    } else if(e.key === "ArrowDown" && velocityY != -1) {
+    } else if (keyCode === 40 && velocityY != -1) { // 화살표 아래 키
         velocityX = 0;
         velocityY = 1;
-    } else if(e.key === "ArrowLeft" && velocityX != 1) {
+    } else if (keyCode === 37 && velocityX != 1) { // 화살표 왼쪽 키
         velocityX = -1;
         velocityY = 0;
-    } else if(e.key === "ArrowRight" && velocityX != -1) {
+    } else if (keyCode === 39 && velocityX != -1) { // 화살표 오른쪽 키
         velocityX = 1;
         velocityY = 0;
     }
@@ -189,10 +222,7 @@ if (document.addEventListener) {
     document.addEventListener("keydown", changeDirection);
 } else if (document.attachEvent) {
     // IE11
-    document.attachEvent("onkeydown", function(e) {
-        e = e || window.event;
-        changeDirection(e);
-    });
+    document.attachEvent("onkeydown", changeDirection);
 };
 
 
@@ -202,31 +232,32 @@ var ingameSpeed = function() {
 }
 
 var initGame = function() {
-        
     if (gameOver) return handleGameOver();
     
-    var htmlMarkup = '<div class="food" style="grid-area: ' + foodY + ' / ' + foodX + ';"></div>';
+    var htmlMarkup = '';
+
+    // 먹이 추가
+    htmlMarkup += '<div class="food" style="top: ' + (foodY * 20) + 'px; left: ' + (foodX * 20) + 'px;"></div>';
 
     // 지렁이가 먹이를 먹었을 때
     if (snakeX === foodX && snakeY === foodY) {
         changeFoodPosition();
         snakeBody.push([foodX, foodY]); // 먹이를 먹을 때 인덱스를 따라간다
         score += 10; // 10점씩 올라감
-        // setIntervalId = setInterval(initGame, speed);
-
         ingameSpeed();
         
-        bestScore = score >= bestScore ? score: bestScore;
+        bestScore = score >= bestScore ? score : bestScore;
         localStorage.setItem("best-score", bestScore);
         scoreElement.innerText = "Score: " + score;
         bestScoreElement.innerText = "Best Score: " + bestScore;
     }
 
-    if(setIntervalId) clearInterval(setIntervalId);
+    // 게임 루프 간격 설정
+    if (setIntervalId) clearInterval(setIntervalId);
     setIntervalId = setInterval(initGame, speed);
 
+    // 몸통 이동
     for (var i = snakeBody.length - 1; i > 0; i--) {
-        // 몸통의 요소 값을 하나씩 앞으로 이동
         snakeBody[i] = snakeBody[i - 1];
     }
 
@@ -236,14 +267,21 @@ var initGame = function() {
     snakeX += velocityX;
     snakeY += velocityY;
 
-    // 지렁이가 벽에 부딪히면 게임 종료
-    if (snakeX <= 0 || snakeX > 30 || snakeY <= 0 || snakeY >30) {
+    // 벽에 부딪히면 게임 종료
+    if (snakeX <= 0 || snakeX > 30 || snakeY <= 0 || snakeY > 30) {
         gameOver = true;
     }
 
+    // 게임 화면에 지렁이 그리기
     for (var i = 0; i < snakeBody.length; i++) {
         // 먹이를 먹으면 몸이 길어진다
-        htmlMarkup += '<div class="head" style="grid-area: ' + snakeBody[i][1] + ' / ' + snakeBody[i][0] + '"></div>';
+        if (i === 0) {
+            // 머리 부분에는 head 클래스를 사용
+            htmlMarkup += '<div class="head" style="top: ' + (snakeBody[i][1] * 20) + 'px; left: ' + (snakeBody[i][0] * 20) + 'px;"></div>';
+        } else {
+            // 몸통 부분에는 body 클래스를 사용하거나 head 클래스에 대체적인 스타일을 추가
+            htmlMarkup += '<div class="body" style="top: ' + (snakeBody[i][1] * 20) + 'px; left: ' + (snakeBody[i][0] * 20) + 'px;"></div>';
+        }
 
         if (i !== 0 && snakeBody[0][1] === snakeBody[i][1] && snakeBody[0][0] === snakeBody[i][0]) {
             gameOver = true;
@@ -252,5 +290,10 @@ var initGame = function() {
     }
     playBoard.innerHTML = htmlMarkup;
 }
+
+
+window.addEventListener('load', function() {
+    initGame();
+});
 
 changeFoodPosition();
