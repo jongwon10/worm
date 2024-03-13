@@ -8,7 +8,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    height: 100%;
     background: gray;
 }
 
@@ -46,8 +46,8 @@ body {
 }
 
 .play-board div {
-    width: calc(100% / 30);
-    height: calc(100% / 30);
+    width: calc(100%);
+    height: calc(100%);
     box-sizing: border-box;
     border: 1px solid black; /* 셀 테두리 추가 */
     z-index: 0;
@@ -61,7 +61,7 @@ body {
     background: red;
     z-index: 0;
     position: relative;
-    width: 20px; /* 적절한 너비 설정 */
+    width: 20px;
     height: 20px;
 }
 
@@ -73,7 +73,7 @@ body {
     background: blue;
     z-index: 0;
     position: relative;
-    width: 20px; /* 적절한 너비 설정 */
+    width: 20px;
     height: 20px;
 }
 

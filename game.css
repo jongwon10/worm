@@ -1,0 +1,8 @@
+* {
+    margin: 0;
+    height: 0;
+}
+
+canvas {
+    background-color: green;
+}
