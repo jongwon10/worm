@@ -97,9 +97,10 @@ function startGame() {
 function draw() {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    ctx.drawImage(snakeImg, snake[0].x, snake[0].y, box, box);
+    
 
     for (var i = 0; i < snake.length; i++) {
+        ctx.drawImage(snakeImg, snake[0].x, snake[0].y, box, box);
         ctx.fillStyle = 'burlywood'; // snake의 색상으로 설정
         ctx.fillRect(snake[i].x, snake[i].y, box, box);
         ctx.strokeStyle = 'black';
@@ -122,6 +123,9 @@ function draw() {
             x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
             y: Math.floor(Math.random() * ((canvasHeight - box) / box)) * box 
         };
+
+        var eatSound = document.getElementById('eatSound');
+        eatSound.play();
 
         gameSpeed();
         clearInterval(game);
