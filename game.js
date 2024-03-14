@@ -2,16 +2,34 @@ var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
 var box = 20;
-var canvasSize = 400;
-
+var canvasWidth = canvas.width;
+var canvasHeight = canvas.height;
 var snake = [];
 snake[0] = { x: 10 * box, y: 10 * box };
-
-var food = { x: Math.floor(Math.random() * (canvasSize / box)) * box, y: Math.floor(Math.random() * (canvasSize / box)) * box };
-
+var food = { x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
+             y: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box };
 var score = 0;
-
 var d;
+var speed = 125;
+var speeds = 0.9;
+var gameOver = false;
+
+var snakeImg = document.getElementById('snakeImg');
+var foodImg = document.getElementById('foodImg');
+
+
+var bestScore = parseInt(localStorage.getItem('bestScore')) || 0;
+
+if (bestScore === null) {
+    bestScore = 0;
+} else {
+    bestScore = parseInt(bestScore);
+}
+
+if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem('bestScore', bestScore);
+}
 
 document.addEventListener('keydown', direction);
 
@@ -36,19 +54,59 @@ function collision(head, array) {
     return false;
 }
 
+function gameSpeed() {
+    speed *= speeds;
+}
+
+$(document).on("click", "#sBtn", function() {
+    console.log("sBtn click");
+    $("#sBtn").css("display", "none");
+    $("#nPopup").css("display", "block");
+});
+
+function resetGame() {
+    // 게임 변수 초기화
+    
+    snake = [];
+    snake[0] = { x: 10 * box, y: 10 * box };
+    food = { x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
+             y: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box };
+    score = 0;
+    d = undefined;
+    speed = 125;
+    speeds = 0.9;
+    gameOver = false;
+
+    // 게임 타이머 리셋 및 재시작
+    clearInterval(game);
+    game = setInterval(draw, speed);
+
+    // 게임 종료 팝업 숨기기
+    $("#goPopup").css("display", "none");
+}
+
+function startGame() {
+    console.log("startGame");
+    var popup = document.getElementById('nPopup');
+    popup.style.display = 'none';
+
+    // 게임 리셋 함수 호출
+    resetGame();
+}
+
 function draw() {
-    ctx.clearRect(0, 0, canvasSize, canvasSize);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+
+    ctx.drawImage(snakeImg, snake[0].x, snake[0].y, box, box);
 
     for (var i = 0; i < snake.length; i++) {
-        ctx.fillStyle = (i === 0) ? 'green' : 'white';
+        ctx.fillStyle = 'burlywood'; // snake의 색상으로 설정
         ctx.fillRect(snake[i].x, snake[i].y, box, box);
-
         ctx.strokeStyle = 'black';
         ctx.strokeRect(snake[i].x, snake[i].y, box, box);
     }
 
-    ctx.fillStyle = 'red';
-    ctx.fillRect(food.x, food.y, box, box);
+    ctx.drawImage(foodImg, food.x, food.y, box, box);
 
     var snakeX = snake[0].x;
     var snakeY = snake[0].y;
@@ -59,23 +117,97 @@ function draw() {
     if (d === 'DOWN') snakeY += box;
 
     if (snakeX == food.x && snakeY == food.y) {
-        score++;
-        food = { x: Math.floor(Math.random() * (canvasSize / box)) * box, y: Math.floor(Math.random() * (canvasSize / box)) * box };
+        score += 10;
+        food = { 
+            x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
+            y: Math.floor(Math.random() * ((canvasHeight - box) / box)) * box 
+        };
+
+        gameSpeed();
+        clearInterval(game);
+        game = setInterval(draw, speed);
     } else {
         snake.pop();
     }
 
     var newHead = { x: snakeX, y: snakeY };
 
-    if (snakeX < 0 || snakeX >= canvasSize || snakeY < 0 || snakeY >= canvasSize || collision(newHead, snake)) {
-        clearInterval(game);
+    if (snakeX < 0 || snakeX >= canvasWidth || snakeY < 0 || snakeY >= canvasHeight) {
+        endGame();
+        console.log("Game over - Hit wall!");
+        
+        return;
+    }
+
+    if (collision(newHead, snake)) {
+        endGame();
+        console.log("Game over - Hit itself!");
+        
+        return;
     }
 
     snake.unshift(newHead);
 
-    ctx.fillStyle = 'black';
-    ctx.font = '20px Arial';
-    ctx.fillText('Score: ' + score, 10, 30);
+    var scoreDisplay = document.getElementById("score");
+    if(scoreDisplay) {
+        scoreDisplay.innerText = 'Score: ' + score;
+    } else {
+        console.error("Score display element not found.");
+    }
+
+    var bestScoreDisplay = document.getElementById("bestScore");
+    if(bestScoreDisplay) {
+        bestScoreDisplay.innerText = 'Best Score: ' + bestScore;
+    } else {
+        console.error("Best score display element not found.");
+    }
 }
 
-var game = setInterval(draw, 100);
+function endGame() {
+    clearInterval(game);
+    console.log("GameOver!");
+
+    if (score > bestScore) {
+        bestScore = score;
+        localStorage.setItem('bestScore', bestScore);
+    }
+
+    $("#final-score").text("Final Score: " + score);
+    $("#best-score").text("Best Score: " + bestScore);
+    $("#goPopup").css("display", "block");
+
+    $(document).on("click", "#rBtn", function() {
+        console.log("rBtn click");
+
+        resetGame();
+        $("#goPopup").css("display", "none");
+        $("#nPopup").css("display", "block");
+    });
+
+    $(document).on("click", "#nBtn", function() {
+        console.log("nBtn click");
+
+        $("#goPopup").css("display", "none");
+        $("#ePopup").css("display", "block");
+
+        $(document).on("click", "#okBtn", function() {
+            location.reload();
+        });
+    });
+
+    $(document).on("click", "#noBtn", function() {
+        console.log("noBtn click");
+
+        $("#ePopup").css("display", "none");
+        $("#nPopup").css("display", "block");
+
+        $(document).on("click", "#noBtn", function() {
+            $("#goPopup").css("display", "none");
+
+            resetGame();
+            console.log("no 재시작");
+        });
+    });  
+}
+
+var game = setInterval(draw, speed);

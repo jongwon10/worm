@@ -4,22 +4,27 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+    margin: 0%;
+}
+
 body {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
+    height: 100%;
     background: gray;
 }
 
 .wrapper {
-    width: 65vmin;
-    height: 75vmin;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-radius: 5px;
-    background-color: aqua;
+    width: 750px; /* 원하는 너비 설정 */
+    height: 750px; /* 원하는 높이 설정 */
+    position: relative;
+    border: 1px solid black;
+    
+    background: aqua;
+    
 }
 
 .game-details {
@@ -38,10 +43,10 @@ body {
     grid-template: repeat(30, 1fr) / repeat(30, 1fr); */
     display: -ms-grid;
     display: grid;
-    -ms-grid-columns: repeat(30, 1fr);
-    grid-template-columns: repeat(30, 1fr);
-    -ms-grid-rows: repeat(30, 1fr);
-    grid-template-rows: repeat(30, 1fr);
+    -ms-grid-columns: repeat(30, 1fr); /* 각 열의 크기를 1fr로 지정 */
+    grid-template-columns: repeat(30, 1fr); /* 그리드 컬럼 */
+    -ms-grid-rows: repeat(30, 1fr); /* 각 행의 크기를 1fr로 지정 */
+    grid-template-rows: repeat(30, 1fr); /* 그리드 로우 */
     background: white;
 }
 
@@ -55,7 +60,7 @@ body {
 }
 
 .play-board .food {
-    background-image: url('/img/acorn.png');
+    background-image: url('worm/img/acorn.png');
     background-size: contain;
     background-repeat: no-repeat;
     background: red;
@@ -80,6 +85,7 @@ body {
 .controls {
     display: flex;
     justify-content: center;
+    background: aqua;
 }
 
 .controls i {
@@ -140,7 +146,6 @@ body {
 
 #gameStartBtn {
     align-self: center;
-    text-align: center;
     width: 40px;
     height: 40px;
     border: 0;
@@ -209,10 +214,6 @@ body {
     margin-bottom: 15px;
     
 }
-/* .btn-last {
-    line-height: 5;
-    margin-top: 30px;
-} */
 
 .end-content button {
     margin: 10px;
@@ -220,73 +221,12 @@ body {
     background: white;
     border: 1px solid black;
     cursor: pointer;
-    font-size: 25px;
-    
-    
+    font-size: 25px;  
 }
 
 .end-content .btn-last {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    align-items: center;
-     
+    align-items: center;   
 }
-
-
-/* #instructions {
-    display: none;
-}
-
-#results,
-body:hover #instructions {
-    position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 53%;
-  width: 65%;
-  background-color: rgba(20, 20, 20, 0.75);
-}
-#results {
-    display: none;
-    cursor: default;
-  }
-  
-  #results .content,
-  #instructions .content {
-    max-width: 300px;
-    padding: 50px;
-    border-radius: 20px;
-  }
-  
-  #results {
-  } */
-
-/* .alertOn {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-.message {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-}
-.button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-} */

@@ -5,9 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="game.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-    <canvas id="canvas" width="500" height="500"></canvas>
+    <div class="game-container">
+        <h1>지렁이 게임</h1>
+        <div id="score">Score: 0</div>
+        <div id="bestScore">Best Score: 0</div>
+        <button id="sBtn">START</button>
+        <div id="nPopup">
+            <div id="nPopup-content">
+                <h1>How To</h1>
+                <p>- 방향키를 조작하여 랜덤으로 보여지는 ITEM을 먹도록 한다.</p>
+                <p>- 점점 늘어나는 지렁이의 몸과 게임이 진행될수록 속도가 증가하는</p>
+                <p>   지렁이를 control하여 벽과 몸에 부딪히지 않는 걸 목적으로 플레이한다.</p>
+                <p>- 벽과 몸통에 부딪히면 즉시 게임 종료</p>
+                <p>- 게임 종료되는 순간, 현재 게임의 Score와 Best Score를 확인한다.</p>
+                <p></p>
+                <button onclick="startGame()"><img src="/img/start.png" alt="시작"></button>
+            </div>
+        </div>
+        <div id="goPopup" style="display: none;">
+            <div id="goPopup-content">
+                <h1>Game Over!</h1>
+                <h2 id="final-score"></h2>
+                <h3 id="best-score"></h3>
+                <div class="btn-container">
+                    <button id="rBtn"><img src="/img/reload.png" alt="재시작"></button>
+                    <button id="nBtn"><img src="/img/close.png" alt="다음으로"></button>
+                </div>
+            </div>
+        </div>
+        <div id="ePopup" style="display: none;">
+            <div class="end-content">
+                <h1>WARNING!</h1>
+                <p>점수를 모두 잃게 됩니다.</p>
+                <p>그래도 나가시겠습니까?</p>
+                <div class="btn-last">
+                    <button id="okBtn">OK</button><br>
+                    <button id="noBtn">NO</button>
+                </div>
+            </div>
+        </div>
+        <img id="snakeImg" src="/img/worm.png" style="display: none;">
+        <img id="foodImg" src="/img/acorn.png" style="display: none;">
+
+        <canvas id="canvas" width="600" height="600"></canvas>
+        <div id="controls">
+            <div class="arrow">↑</div>
+            <div class="arrow">↓</div>
+            <div class="arrow">←</div>
+            <div class="arrow">→</div>
+        </div>
+    </div>
+    
     <script src="game.js"></script>
 </body>
 </html>
