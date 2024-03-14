@@ -28,6 +28,8 @@ var bestScore = localStorage.getItem("best-score") || 0;
 bestScoreElement.innerText = "Best Score: " + bestScore;
 
 // 시작 버튼
+
+// 시작 버튼
 $(document).on("click", "#startBtn", function() {
     console.log("startBtn click");
     $("#startPopup").css("display", "none");
@@ -35,15 +37,22 @@ $(document).on("click", "#startBtn", function() {
 });
 
 // 게임 설명내의 시작 버튼
+
+// 게임 설명내의 시작 버튼
 $(document).on("click", "#gameStartBtn", function() {
     console.log("gameStartBtn click");
+    $("#noticePopup").css("display", "none");
+
     $("#noticePopup").css("display", "none");
 
     startGame(isFirstGame);
     isFirstGame = false;
 
     initGame();
+
+    initGame();
 });
+
 
 
 var startGame = function(isFirstGame) {
@@ -88,7 +97,15 @@ var handleGameOver = function() {
         $("#restartPopup").css("display", "none");
 
         $(document).on("click", "#okBtn", function() {
+
+    $(document).on("click", "#nextBtn", function() {
+        $("#endPopup").css("display", "block");
+        $("#restartPopup").css("display", "none");
+
+        $(document).on("click", "#okBtn", function() {
             location.reload();
+        });
+    });
         });
     });
 
@@ -157,31 +174,16 @@ var resetGame = function() {
 };
 
 // 음식 랜덤 생성
+// 음식 랜덤 생성
 var changeFoodPosition = function() {
+   
    
     foodX = Math.floor(Math.random() * 30) + 1;
     foodY = Math.floor(Math.random() * 30) + 1;
 }
 
 // 방향키
-function changeDirection(e) {
-    e = e || window.event;
-    var keyCode = e.keyCode || e.which;
 
-    if (keyCode === 38 && velocityY != 1) { // 화살표 위 키
-        velocityX = 0;
-        velocityY = -1;
-    } else if (keyCode === 40 && velocityY != -1) { // 화살표 아래 키
-        velocityX = 0;
-        velocityY = 1;
-    } else if (keyCode === 37 && velocityX != 1) { // 화살표 왼쪽 키
-        velocityX = -1;
-        velocityY = 0;
-    } else if (keyCode === 39 && velocityX != -1) { // 화살표 오른쪽 키
-        velocityX = 1;
-        velocityY = 0;
-    }
-}
 
 // 방향키 리스너
 if (document.addEventListener) {
@@ -236,11 +238,13 @@ var initGame = function() {
     if (snakeX <= -1 || snakeX > 29 || snakeY <= -1 || snakeY > 29) {
         gameOver = true;
         console.log("게임 벽");
+        console.log("게임 벽");
     }
 
     // 게임 화면에 지렁이 그리기
     for (var i = 0; i < snakeBody.length; i++) {
         // 먹이를 먹으면 몸이 길어진다
+        htmlMarkup += '<div class="head" style="top: ' + (snakeBody[i][1] * 25) + 'px; left: ' + (snakeBody[i][0] * 25) + 'px;"></div>';
         htmlMarkup += '<div class="head" style="top: ' + (snakeBody[i][1] * 25) + 'px; left: ' + (snakeBody[i][0] * 25) + 'px;"></div>';
 
         if (i !== 0 && snakeBody[0][1] === snakeBody[i][1] && snakeBody[0][0] === snakeBody[i][0]) {

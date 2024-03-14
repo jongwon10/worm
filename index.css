@@ -51,8 +51,8 @@ body {
 }
 
 .play-board div {
-    width: calc(100% / 30);
-    height: calc(100% / 30);
+    width: calc(100%);
+    height: calc(100%);
     box-sizing: border-box;
     border: 1px solid black; /* 셀 테두리 추가 */
     z-index: 0;
