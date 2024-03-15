@@ -13,6 +13,8 @@ var d;
 var speed = 125;
 var speeds = 0.9;
 var gameOver = false;
+var savedState = null;
+var gameStarted = false;
 
 var snakeImg = document.getElementById('snakeImg');
 var foodImg = document.getElementById('foodImg');
@@ -54,9 +56,11 @@ function collision(head, array) {
     return false;
 }
 
+
 function gameSpeed() {
     speed *= speeds;
 }
+
 
 $(document).on("click", "#sBtn", function() {
     console.log("sBtn click");
@@ -64,9 +68,17 @@ $(document).on("click", "#sBtn", function() {
     $("#nPopup").css("display", "block");
 });
 
+function startGame() {
+    console.log("startGame");
+    var popup = document.getElementById('nPopup');
+    popup.style.display = 'none';
+
+    resetGame();
+
+    gameStarted = true;
+}
+
 function resetGame() {
-    // 게임 변수 초기화
-    
     snake = [];
     snake[0] = { x: 10 * box, y: 10 * box };
     food = { x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
@@ -77,21 +89,13 @@ function resetGame() {
     speeds = 0.9;
     gameOver = false;
 
-    // 게임 타이머 리셋 및 재시작
     clearInterval(game);
     game = setInterval(draw, speed);
 
-    // 게임 종료 팝업 숨기기
     $("#goPopup").css("display", "none");
-}
 
-function startGame() {
-    console.log("startGame");
-    var popup = document.getElementById('nPopup');
-    popup.style.display = 'none';
-
-    // 게임 리셋 함수 호출
-    resetGame();
+    $("#cBtn").off("click", cBtnClick);
+    $("#cBtn").on("click", cBtnClick);
 }
 
 function draw() {
@@ -99,7 +103,7 @@ function draw() {
 
     for (var i = 0; i < snake.length; i++) {
         ctx.drawImage(snakeImg, snake[0].x, snake[0].y, box, box);
-        ctx.fillStyle = 'burlywood'; // snake의 색상으로 설정
+        ctx.fillStyle = 'burlywood';
         ctx.fillRect(snake[i].x, snake[i].y, box, box);
         ctx.strokeStyle = 'black';
         ctx.strokeRect(snake[i].x, snake[i].y, box, box);
@@ -193,9 +197,31 @@ function endGame() {
     }); 
 }
 
-$(document).on("click", "#cBtn", function() {
-    console.log("cBtn");
+function pauseGame() {
+    clearInterval(game);
 
+    savedState = {
+        snake: JSON.parse(JSON.stringify(snake)),
+        food: { x: food.x, y: food.y },
+        score: score
+    };
+}
+
+function resumeGame() {
+
+    if (savedState) {
+        snake = JSON.parse(JSON.stringify(savedState.snake));
+        food = { x: savedState.food.x, y: savedState.food.y };
+        score = savedState.score;
+        game = setInterval(draw, speed);
+        savedState = null;
+    }
+}
+
+function cBtnClick() {
+    console.log("cBtn clicked");
+
+    pauseGame();
     $("#ePopup").css("display", "block");
 
     $("#okBtn").on("click", function() {
@@ -208,16 +234,11 @@ $(document).on("click", "#cBtn", function() {
         console.log("noBtn click");
 
         $("#ePopup").css("display", "none");
-        $("#nPopup").css("display", "block");
+        $("#goPopup").css("display", "none");
 
-        $("#noBtn").on("click", function() {
-            $("#goPopup").css("display", "none");
-
-            resetGame();
-            console.log("no 재시작");
-        });
+        resumeGame();
+        console.log("Game resumed");
     });
-});
-
+}
 
 var game = setInterval(draw, speed);
