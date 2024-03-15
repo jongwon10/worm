@@ -19,7 +19,6 @@ var gameStarted = false;
 var snakeImg = document.getElementById('snakeImg');
 var foodImg = document.getElementById('foodImg');
 
-
 var bestScore = parseInt(localStorage.getItem('bestScore')) || 0;
 
 if (bestScore === null) {
@@ -56,11 +55,9 @@ function collision(head, array) {
     return false;
 }
 
-
 function gameSpeed() {
     speed *= speeds;
 }
-
 
 $(document).on("click", "#sBtn", function() {
     console.log("sBtn click");
@@ -182,6 +179,9 @@ function endGame() {
     $("#best-score").text("Best Score: " + bestScore);
     $("#goPopup").css("display", "block");
 
+    $("#cBtn").off("click");
+
+
     $(document).on("click", "#rBtn", function() {
         console.log("rBtn click");
 
@@ -200,11 +200,13 @@ function endGame() {
 function pauseGame() {
     clearInterval(game);
 
-    savedState = {
-        snake: JSON.parse(JSON.stringify(snake)),
-        food: { x: food.x, y: food.y },
-        score: score
-    };
+    if (!gameOver) {
+        savedState = {
+            snake: JSON.parse(JSON.stringify(snake)),
+            food: { x: food.x, y: food.y },
+            score: score
+        };
+    }
 }
 
 function resumeGame() {
