@@ -97,8 +97,6 @@ function startGame() {
 function draw() {
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-    
-
     for (var i = 0; i < snake.length; i++) {
         ctx.drawImage(snakeImg, snake[0].x, snake[0].y, box, box);
         ctx.fillStyle = 'burlywood'; // snake의 색상으로 설정
@@ -190,28 +188,36 @@ function endGame() {
 
     $(document).on("click", "#nBtn", function() {
         console.log("nBtn click");
+        
+        location.reload();
+    }); 
+}
 
-        $("#goPopup").css("display", "none");
-        $("#ePopup").css("display", "block");
+$(document).on("click", "#cBtn", function() {
+    console.log("cBtn");
 
-        $(document).on("click", "#okBtn", function() {
-            location.reload();
-        });
+    $("#ePopup").css("display", "block");
+
+    $("#okBtn").on("click", function() {
+        console.log("okBtn click");
+
+        location.reload();
     });
 
-    $(document).on("click", "#noBtn", function() {
+    $("#noBtn").on("click", function() {
         console.log("noBtn click");
 
         $("#ePopup").css("display", "none");
         $("#nPopup").css("display", "block");
 
-        $(document).on("click", "#noBtn", function() {
+        $("#noBtn").on("click", function() {
             $("#goPopup").css("display", "none");
 
             resetGame();
             console.log("no 재시작");
         });
-    });  
-}
+    });
+});
+
 
 var game = setInterval(draw, speed);
