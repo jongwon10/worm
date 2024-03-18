@@ -49,6 +49,10 @@ function direction(event) {
 }
 
 function collision(head, array) {
+    if (array.length === 0) {
+        return false;
+    }
+
     for (var i = 0; i < array.length; i++) {
         if (head.x == array[i].x && head.y == array[i].y) {
             return true;
@@ -246,15 +250,6 @@ function cBtnClick() {
 
         resumeGame();
         console.log("Game resumed");
-    });
-
-    $("#nPopup").one("webkitAnimationEnd oanimationend msAnimationEnd animationend", function() {
-        $(document).off("keydown", direction);
-    });
-
-    // 설명 팝업이 닫힐 때 다시 키다운 이벤트 핸들러 추가
-    $("#nPopup").one("webkitAnimationEnd oanimationend msAnimationEnd animationend", function() {
-        $(document).on("keydown", direction);
     });
 }
 
