@@ -35,14 +35,16 @@ if (score > bestScore) {
 document.addEventListener('keydown', direction);
 
 function direction(event) {
-    if (event.keyCode == 37 && d !== 'RIGHT') {
-        d = 'LEFT';
-    } else if (event.keyCode == 38 && d !== 'DOWN') {
-        d = 'UP';
-    } else if (event.keyCode == 39 && d !== 'LEFT') {
-        d = 'RIGHT';
-    } else if (event.keyCode == 40 && d !== 'UP') {
-        d = 'DOWN';
+    if (gameStarted) {
+        if (event.keyCode == 37 && d !== 'RIGHT') {
+            d = 'LEFT';
+        } else if (event.keyCode == 38 && d !== 'DOWN') {
+            d = 'UP';
+        } else if (event.keyCode == 39 && d !== 'LEFT') {
+            d = 'RIGHT';
+        } else if (event.keyCode == 40 && d !== 'UP') {
+            d = 'DOWN';
+        }
     }
 }
 
@@ -85,6 +87,7 @@ function resetGame() {
     speed = 125;
     speeds = 0.9;
     gameOver = false;
+    gameStarted = false;
 
     clearInterval(game);
     game = setInterval(draw, speed);
@@ -93,6 +96,7 @@ function resetGame() {
 
     $("#cBtn").off("click", cBtnClick);
     $("#cBtn").on("click", cBtnClick);
+    $(document).off("keydown", direction);
 }
 
 function draw() {
@@ -188,6 +192,8 @@ function endGame() {
         resetGame();
         $("#goPopup").css("display", "none");
         $("#nPopup").css("display", "block");
+        $("#cBtn").off("click", cBtnClick);
+        $(document).off("keydown", direction);
     });
 
     $(document).on("click", "#nBtn", function() {
@@ -240,6 +246,15 @@ function cBtnClick() {
 
         resumeGame();
         console.log("Game resumed");
+    });
+
+    $("#nPopup").one("webkitAnimationEnd oanimationend msAnimationEnd animationend", function() {
+        $(document).off("keydown", direction);
+    });
+
+    // 설명 팝업이 닫힐 때 다시 키다운 이벤트 핸들러 추가
+    $("#nPopup").one("webkitAnimationEnd oanimationend msAnimationEnd animationend", function() {
+        $(document).on("keydown", direction);
     });
 }
 
