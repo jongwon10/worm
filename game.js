@@ -15,9 +15,12 @@ var speeds = 0.9;
 var gameOver = false;
 var savedState = null;
 var gameStarted = false;
+var specialFood = { x: 0, y: 0, active: false };
+var foodEatenCount = 0;
 
 var snakeImg = document.getElementById('snakeImg');
 var foodImg = document.getElementById('foodImg');
+var specialFoodImg = document.getElementById('specialFoodImg');
 
 var bestScore = parseInt(localStorage.getItem('bestScore')) || 0;
 
@@ -92,6 +95,8 @@ function resetGame() {
     speeds = 0.9;
     gameOver = false;
     gameStarted = false;
+    specialFood = { x: 0, y: 0, active: false };
+    foodEatenCount = 0;
 
     clearInterval(game);
     game = setInterval(draw, speed);
@@ -126,19 +131,50 @@ function draw() {
 
     if (snakeX == food.x && snakeY == food.y) {
         score += 10;
+        foodEatenCount++;
         food = { 
             x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
             y: Math.floor(Math.random() * ((canvasHeight - box) / box)) * box 
         };
 
+        if (specialFood.active) {
+            specialFood.active = false;
+        }
+
         var eatSound = document.getElementById('eatSound');
         eatSound.play();
+
+        if(foodEatenCount % 5 == 0) {
+            specialFood.x = Math.floor(Math.random() * ((canvasWidth - box) / box)) * box;
+            specialFood.y = Math.floor(Math.random() * ((canvasHeight - box) / box)) * box;
+            specialFood.active = true;
+        }
 
         gameSpeed();
         clearInterval(game);
         game = setInterval(draw, speed);
     } else {
         snake.pop();
+    }
+
+    if(specialFood.active) {
+        ctx.drawImage(specialFoodImg, specialFood.x, specialFood.y, box, box);
+    }
+
+    if(specialFood.active && snakeX == specialFood.x && snakeY == specialFood.y) {
+        specialFood.active = false;
+        
+        var lengthToReduce = 2;
+        if(snake.length > lengthToReduce) {
+            for(let i = 0; i < lengthToReduce; i++) {
+                snake.pop();
+            }
+        } else {
+            // 뱀의 길이가 줄어들 길이보다 작거나 같은 경우, 뱀의 길이를 1로 설정
+            while(snake.length > 1) {
+                snake.pop();
+            }
+        }
     }
 
     var newHead = { x: snakeX, y: snakeY };
