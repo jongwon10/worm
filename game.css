@@ -42,6 +42,15 @@ body {
     cursor: pointer;
 }
 
+#cBtn1 {
+    display: inline-block;
+    position: absolute;
+    margin-left: 450px;
+    background: white;
+    border: 0;
+    cursor: pointer;
+}
+
 #score {
     text-align: left;
     font-size: 2rem;
@@ -52,18 +61,56 @@ body {
     font-size: 1rem;
 }
 
-#sBtn {
+#mode {
     position: absolute;
-    top: 50%;
+    top: 53%;
     left: 50%;
     transform: translate(-50%, -50%);
-    padding: 40px 50px;
-    background-color: white;
-    color: black;
-    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#mode #normalBtn {
+    padding: 30px;
+    margin-right: 97px;
+    color: white;
+    /* border: 1px solid black; */
     border-radius: 10px;
-    font-size: xx-large;
+    font-size: x-large;
     cursor: pointer;
+    background-color: #82c8a0;
+    box-shadow: 0 0 0 1px #82c8a0 inset,
+        0 0 0 2px rgba(255,255,255,0.15) inset,
+        0 8px 0 0 rgba(126, 194, 155, .7),
+        0 8px 0 1px rgba(0,0,0,.4),
+        0 8px 8px 1px rgba(0,0,0,0.5);
+}
+
+#mode #normalBtn:active {
+    box-shadow: 0 0 0 1px #82c8a0 inset,
+        0 0 0 2px rgba(255,255,255,0.15) inset,
+        0 0 0 1px rgba(0,0,0,0.4);
+}
+
+#mode #hardBtn {
+    padding: 30px;
+    color: white;
+    border-radius: 10px;
+    font-size: x-large;
+    cursor: pointer;
+    background-color: #82c8a0;
+    box-shadow: 0 0 0 1px #82c8a0 inset,
+        0 0 0 2px rgba(255,255,255,0.15) inset,
+        0 8px 0 0 rgba(126, 194, 155, .7),
+        0 8px 0 1px rgba(0,0,0,.4),
+        0 8px 8px 1px rgba(0,0,0,0.5);
+}
+
+#mode #hardBtn:active {
+    box-shadow: 0 0 0 1px #82c8a0 inset,
+    0 0 0 2px rgba(255,255,255,0.15) inset,
+    0 0 0 1px rgba(0,0,0,0.4);
 }
 
 #nPopup {
@@ -82,6 +129,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     text-align: left;
+    margin-top: 100px;
 }
 
 #nPopup-content h1 {
@@ -90,7 +138,7 @@ body {
 
 #nPopup-content p {
     margin-left: 10px;
-    line-height: 4;
+    line-height: 3;
 }
 
 #nPopup-content button {
@@ -191,18 +239,25 @@ body {
     justify-content: center;
     align-items: center;   
 }
+
+#countdownOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+}
+
+#countdownText {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 70px;
+    color: black;
+}
+
 canvas {
     background-color: lightblue;
-}
-
-#controls {
-    display: flex;
-    justify-content: center;
-}
-
-.arrow {
-    text-align: center;
-    padding:  25px;
-    font-size: large;
-    font-weight: bolder;
 }

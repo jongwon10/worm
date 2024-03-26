@@ -6,23 +6,53 @@ var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 var snake = [];
 snake[0] = { x: 10 * box, y: 10 * box };
-var food = { x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
-             y: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box };
+var food = { x: (Math.floor(Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box,
+             y: (Math.floor(Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box };
 var score = 0;
+var normalScore = 0;
+var hardScore = 0;
 var d;
-var speed = 125;
+var speed;
 var speeds = 0.9;
 var gameOver = false;
 var savedState = null;
 var gameStarted = false;
 var specialFood = { x: 0, y: 0, active: false };
+var bombFood = { x: 0, y: 0, active: false };
+var bombFood2 = { x: 0, y: 0, active: false };
+var bombFood3 = { x: 0, y: 0, active: false };
 var foodEatenCount = 0;
+var count = 3;
+var countdownInterval;
 
 var snakeImg = document.getElementById('snakeImg');
 var foodImg = document.getElementById('foodImg');
 var specialFoodImg = document.getElementById('specialFoodImg');
+var bombFoodImg = document.getElementById('bombFoodImg');
+var backgroundMusic = document.getElementById('gameBgm');
+backgroundMusic.volume = 0.3;
+
+var eatSound = document.getElementById('eatSound');
+var specialSound = document.getElementById('specialSound');
+var bombSound = document.getElementById('bombSound');
 
 var bestScore = parseInt(localStorage.getItem('bestScore')) || 0;
+
+var currentMode;
+
+function switchMode(mode) {
+    currentMode = mode;
+    if (mode == 'normalMode') {
+        speed = 300;
+    } else if (mode == 'hardMode') {
+        speed = 200;
+    }
+
+    if (!gameStarted) {
+        clearInterval(game);
+        game = setInterval(draw, speed);
+    }
+}
 
 if (bestScore === null) {
     bestScore = 0;
@@ -30,23 +60,20 @@ if (bestScore === null) {
     bestScore = parseInt(bestScore);
 }
 
-if (score > bestScore) {
-    bestScore = score;
-    localStorage.setItem('bestScore', bestScore);
-}
-
 document.addEventListener('keydown', direction);
 
 function direction(event) {
-    if (gameStarted) {
-        if (event.keyCode == 37 && d !== 'RIGHT') {
-            d = 'LEFT';
-        } else if (event.keyCode == 38 && d !== 'DOWN') {
-            d = 'UP';
-        } else if (event.keyCode == 39 && d !== 'LEFT') {
-            d = 'RIGHT';
-        } else if (event.keyCode == 40 && d !== 'UP') {
-            d = 'DOWN';
+    if (!$("#ePopup").is(":visible")) {
+        if (gameStarted) {
+            if (event.keyCode == 37 && d !== 'RIGHT') {
+                d = 'LEFT';
+            } else if (event.keyCode == 38 && d !== 'DOWN') {
+                d = 'UP';
+            } else if (event.keyCode == 39 && d !== 'LEFT') {
+                d = 'RIGHT';
+            } else if (event.keyCode == 40 && d !== 'UP') {
+                d = 'DOWN';
+            }
         }
     }
 }
@@ -68,16 +95,36 @@ function gameSpeed() {
     speed *= speeds;
 }
 
-$(document).on("click", "#sBtn", function() {
-    console.log("sBtn click");
-    $("#sBtn").css("display", "none");
+$("#normalBtn").on("click", function () {
+    switchMode('normalMode');
+
+    $("#normalBtn").css("display", "none");
+    $("#hardBtn").css("display", "none");
     $("#nPopup").css("display", "block");
+});
+
+$("#hardBtn").on("click", function () {
+    switchMode('hardMode');
+
+    $("#normalBtn").css("display", "none");
+    $("#hardBtn").css("display", "none");
+    $("#nPopup").css("display", "block");
+    $("#cBtn").off("click", cBtnClick);
+});
+
+$("#cBtn1").on("click", function () {
+    $("#normalBtn").css("display", "block");
+    $("#hardBtn").css("display", "block");
+    $("#nPopup").css("display", "none");
+    $("#cBtn").off("click", cBtnClick);
 });
 
 function startGame() {
     console.log("startGame");
     var popup = document.getElementById('nPopup');
     popup.style.display = 'none';
+
+    backgroundMusic.play();
 
     resetGame();
 
@@ -87,18 +134,29 @@ function startGame() {
 function resetGame() {
     snake = [];
     snake[0] = { x: 10 * box, y: 10 * box };
-    food = { x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
-             y: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box };
     score = 0;
+    normalScore = 0;
+    hardScore = 0;
     d = undefined;
-    speed = 125;
+    speed;
     speeds = 0.9;
     gameOver = false;
     gameStarted = false;
     specialFood = { x: 0, y: 0, active: false };
+    bombFood = { x: 0, y: 0, active: false };
     foodEatenCount = 0;
+    clearInterval(countdownInterval);
+    count = 3;
+    // localStorage.removeItem('bestScore');
 
     clearInterval(game);
+
+    if (currentMode == 'normalMode') {
+        speed = 300;
+    } else if (currentMode == 'hardMode') {
+        speed = 200;
+    }
+
     game = setInterval(draw, speed);
 
     $("#goPopup").css("display", "none");
@@ -130,24 +188,44 @@ function draw() {
     if (d === 'DOWN') snakeY += box;
 
     if (snakeX == food.x && snakeY == food.y) {
-        score += 10;
+        normalScore += 10;
+        hardScore += 10;
         foodEatenCount++;
-        food = { 
-            x: Math.floor(Math.random() * ((canvasWidth - box) / box)) * box, 
-            y: Math.floor(Math.random() * ((canvasHeight - box) / box)) * box 
-        };
+        
+        food = { x: (Math.floor(Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box,
+                 y: (Math.floor(Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box };
+        
+        eatSound.play();
 
         if (specialFood.active) {
             specialFood.active = false;
         }
 
-        var eatSound = document.getElementById('eatSound');
-        eatSound.play();
-
         if(foodEatenCount % 5 == 0) {
-            specialFood.x = Math.floor(Math.random() * ((canvasWidth - box) / box)) * box;
-            specialFood.y = Math.floor(Math.random() * ((canvasHeight - box) / box)) * box;
+            specialFood.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
+            specialFood.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
             specialFood.active = true;
+        }
+        
+        if  (currentMode === 'hardMode' && bombFood.active) {
+            bombFood.active = false;
+        }
+
+        if (currentMode === 'hardMode') {
+            bombFood.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
+            bombFood.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
+            bombFood.active = true;
+            console.log('1');
+
+            bombFood2.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
+            bombFood2.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
+            bombFood2.active = true;
+            console.log('2');
+
+            bombFood3.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
+            bombFood3.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
+            bombFood3.active = true;
+            console.log('3');
         }
 
         gameSpeed();
@@ -175,6 +253,47 @@ function draw() {
                 snake.pop();
             }
         }
+        specialSound.play();
+    }
+
+    if (currentMode === 'hardMode') {
+        // 폭탄 음식 그리기
+        if (bombFood.active) {
+            ctx.drawImage(bombFoodImg, bombFood.x, bombFood.y, box, box);
+            ctx.drawImage(bombFoodImg, bombFood2.x, bombFood2.y, box, box);
+            ctx.drawImage(bombFoodImg, bombFood3.x, bombFood3.y, box, box);
+        }   
+
+        // 폭탄 음식을 먹었을 때
+        if (bombFood.active && snakeX === bombFood.x && snakeY === bombFood.y) {
+            // 폭탄 음식을 먹었을 때의 동작 추가
+            console.log('1번음식');
+            endGame(); // 게임 종료
+
+            // 폭탄 음식 화면에서 사라지게 하기
+            bombFood.active = false;
+            bombSound.play();
+        }
+
+        if (bombFood2.active && snakeX === bombFood2.x && snakeY === bombFood2.y) {
+            // 폭탄 음식을 먹었을 때의 동작 추가
+            console.log('2번음식');
+            endGame(); // 게임 종료
+
+            // 폭탄 음식 화면에서 사라지게 하기
+            bombFood2.active = false;
+            bombSound.play();
+        }
+
+        if (bombFood3.active && snakeX === bombFood3.x && snakeY === bombFood3.y) {
+            // 폭탄 음식을 먹었을 때의 동작 추가
+            console.log('3번음식');
+            endGame(); // 게임 종료
+
+            // 폭탄 음식 화면에서 사라지게 하기
+            bombFood3.active = false;
+            bombSound.play();
+        }
     }
 
     var newHead = { x: snakeX, y: snakeY };
@@ -197,7 +316,12 @@ function draw() {
 
     var scoreDisplay = document.getElementById("score");
     if(scoreDisplay) {
-        scoreDisplay.innerText = 'Score: ' + score;
+        if (currentMode === 'normalMode') {
+            scoreDisplay.innerText = 'Normal Score: ' + normalScore;
+        } else if (currentMode ==='hardMode') {
+            scoreDisplay.innerText = 'Hard Score: ' + hardScore;
+        }
+        
     } else {
         console.error("Score display element not found.");
     }
@@ -211,15 +335,25 @@ function draw() {
 }
 
 function endGame() {
+
     clearInterval(game);
     console.log("GameOver!");
 
-    if (score > bestScore) {
-        bestScore = score;
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+
+    if (currentMode === 'normalMode') {
+        $("#normal-final-score").text("Normal Score: " + normalScore);
+    } else if (currentMode === 'hardMode') {
+        $("#hard-final-score").text("Hard Score: " + hardScore);
+    }
+
+    if ((currentMode === 'normalMode' && normalScore > bestScore) ||
+        (currentMode === 'hardMode' && hardScore > bestScore)) {
+        bestScore = (currentMode === 'normalMode') ? normalScore : hardScore;
         localStorage.setItem('bestScore', bestScore);
     }
 
-    $("#final-score").text("Final Score: " + score);
     $("#best-score").text("Best Score: " + bestScore);
     $("#goPopup").css("display", "block");
 
@@ -233,7 +367,6 @@ function endGame() {
         $("#goPopup").css("display", "none");
         $("#nPopup").css("display", "block");
         $("#cBtn").off("click", cBtnClick);
-        $(document).off("keydown", direction);
     });
 
     $(document).on("click", "#nBtn", function() {
@@ -253,9 +386,18 @@ function pauseGame() {
             score: score
         };
     }
+    
+    $(document).on("keydown", function(e) {
+        e.preventDefault()
+    });
+
+    backgroundMusic.pause();
+
+    count = 3;
 }
 
 function resumeGame() {
+    count = 3;
 
     if (savedState) {
         snake = JSON.parse(JSON.stringify(savedState.snake));
@@ -264,6 +406,8 @@ function resumeGame() {
         game = setInterval(draw, speed);
         savedState = null;
     }
+
+    backgroundMusic.play();
 }
 
 function cBtnClick() {
@@ -283,9 +427,24 @@ function cBtnClick() {
 
         $("#ePopup").css("display", "none");
         $("#goPopup").css("display", "none");
+        $("#countdownOverlay").css("display", "block");
 
-        resumeGame();
-        console.log("Game resumed");
+        $("#countdownText").text("3");
+
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(function() {
+            if(count > 1){
+                // DOM이 완전히 로드된 후에 countdownText를 선택하여 텍스트를 설정
+                count -= 1;
+                $("#countdownText").text(count);
+            } else {
+                $("#countdownOverlay").css("display", "none");
+                resumeGame();
+                console.log("Game resumed");
+                clearInterval(countdownInterval);
+                count = 3;
+            }
+        }, 1000);
     });
 }
 
