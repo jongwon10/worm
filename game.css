@@ -28,32 +28,34 @@ body {
     font-size: 2rem;
     margin-bottom: 1rem;
     position: relative;
-    display: inline-block;
+    /* display: inline-block; */
     line-height: 2rem;
-    text-align: right;
+    text-align: center;
 }
 
 #cBtn {
-    display: inline-block;
-    position: absolute;
-    margin-left: 190px;
+    /* display: inline-block; */
+    position: relative;
+    margin-left: 200px;
     background: white;
     border: 0;
     cursor: pointer;
+    float: right;
 }
 
 #cBtn1 {
-    display: inline-block;
-    position: absolute;
-    margin-left: 450px;
+    /* display: inline-block; */
+    position: relative;
+    /* margin-left: 450px; */
     background: white;
     border: 0;
     cursor: pointer;
+    float: right;
 }
 
 #score {
     text-align: left;
-    font-size: 2rem;
+    font-size: 1.5rem;
 }
 
 #bestScore {
@@ -129,7 +131,7 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     text-align: left;
-    margin-top: 100px;
+    margin-top: 80px;
 }
 
 #nPopup-content h1 {

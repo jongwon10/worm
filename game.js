@@ -119,16 +119,22 @@ $("#cBtn1").on("click", function () {
     $("#cBtn").off("click", cBtnClick);
 });
 
+$("#score").hide();
+$("#bestScore").hide();
+$("#cBtn").hide();
+
 function startGame() {
     console.log("startGame");
     var popup = document.getElementById('nPopup');
     popup.style.display = 'none';
 
     backgroundMusic.play();
-
     resetGame();
-
     gameStarted = true;
+
+    $("#score").show();
+    $("#bestScore").show();
+    $("#cBtn").show();
 }
 
 function resetGame() {
@@ -206,7 +212,7 @@ function draw() {
             specialFood.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
             specialFood.active = true;
         }
-        
+
         if  (currentMode === 'hardMode' && bombFood.active) {
             bombFood.active = false;
         }
@@ -317,9 +323,9 @@ function draw() {
     var scoreDisplay = document.getElementById("score");
     if(scoreDisplay) {
         if (currentMode === 'normalMode') {
-            scoreDisplay.innerText = 'Normal Score: ' + normalScore;
+            scoreDisplay.innerText = 'Normal SCORE: ' + normalScore;
         } else if (currentMode ==='hardMode') {
-            scoreDisplay.innerText = 'Hard Score: ' + hardScore;
+            scoreDisplay.innerText = 'Hard SCORE: ' + hardScore;
         }
         
     } else {
@@ -328,7 +334,7 @@ function draw() {
 
     var bestScoreDisplay = document.getElementById("bestScore");
     if(bestScoreDisplay) {
-        bestScoreDisplay.innerText = 'Best Score: ' + bestScore;
+        bestScoreDisplay.innerText = 'BEST SCORE: ' + bestScore;
     } else {
         console.error("Best score display element not found.");
     }
@@ -343,9 +349,9 @@ function endGame() {
     backgroundMusic.currentTime = 0;
 
     if (currentMode === 'normalMode') {
-        $("#normal-final-score").text("Normal Score: " + normalScore);
+        $("#normal-final-score").text("Normal SCORE: " + normalScore);
     } else if (currentMode === 'hardMode') {
-        $("#hard-final-score").text("Hard Score: " + hardScore);
+        $("#hard-final-score").text("Hard SCORE: " + hardScore);
     }
 
     if ((currentMode === 'normalMode' && normalScore > bestScore) ||
@@ -354,7 +360,7 @@ function endGame() {
         localStorage.setItem('bestScore', bestScore);
     }
 
-    $("#best-score").text("Best Score: " + bestScore);
+    $("#best-score").text("BEST SCORE: " + bestScore);
     $("#goPopup").css("display", "block");
 
     $("#cBtn").off("click");
