@@ -10,8 +10,8 @@
 <body>
     <div class="game-container">
         <h1 id="h1">지렁이 게임</h1>
-        <button id="cBtn"><img src="./img/close1.png" alt="나가기"></button>
-        <div id="score"> 0</div>
+        <div id="cBtn"><img src="./img/close1.png" alt="나가기"></div>
+        <div id="score"></div>
         <div id="bestScore">Best Score: 0</div>
         <div id="mode" class="mode">
             <button id="normalBtn">NORMAL</button>
@@ -26,8 +26,8 @@
                 <p>   (나뭇잎 : 점수 획득과 지렁이 몸 1칸 생성</p>
                 <p>   사과 : 점수 변동 없고, 지렁이 몸 2칸 삭제)</p>
                 <p>   폭탄 : hard 모드에서만 등장하며, 먹는 즉시 game over</p>
-                <p>-  점점 늘어나는 지렁이의 몸과 게임이 진행될수록 움직임이 빨라지는</p>
-                <p>   지렁이를 control하여 벽과 몸에 부딪히지 않는 걸 목적으로 플레이한다.</p>
+                <p>-  점점 늘어나는 지렁이의 몸과 게임이 진행될수록 움직임이 빨라지는 지렁이를</p>
+                <p>   control하여 벽과 몸에 부딪히지 않는 걸 목적으로 플레이한다.</p>
                 <p>-  벽과 몸통에 부딪히면 즉시 game over</p>
                 <p>-  게임이 종료되는 순간 출력되는 알림 창에 현재 게임의 score와 best score를</p>
                 <p>확인한다.</p>
@@ -36,9 +36,9 @@
         </div>
         <div id="goPopup" style="display: none;">
             <div id="goPopup-content">
-                <h1>Game Over!</h1>
-                <h2 id="normal-final-score"></h2>
-                <h2 id="hard-final-score"></h2>
+                <h1>Game Over</h1>
+                <!-- <h2 id="normal-final-score"></h2> -->
+                <h2 id="final-score"></h2>
                 <h3 id="best-score"></h3>
                 <div class="btn-container">
                     <button id="rBtn"><img src="./img/reload.png" alt="재시작"></button>
@@ -69,7 +69,7 @@
         <audio id="eatSound" src="./media/eatSound.mp3"></audio>
         <audio id="specialSound" src="./media/eat_sound.mp3"></audio>
         <audio id="bombSound" src="./media/bomb.mp3"></audio>
-        <audio id="gameBgm" src="./media/wormBgm1.mp3"></audio>
+        <audio loop id="gameBgm" src="./media/wormBgm1.mp3"></audio>
 
         <canvas id="canvas" width="600" height="600"></canvas>
     </div>

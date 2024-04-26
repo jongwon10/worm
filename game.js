@@ -6,8 +6,7 @@ var canvasWidth = canvas.width;
 var canvasHeight = canvas.height;
 var snake = [];
 snake[0] = { x: 10 * box, y: 10 * box };
-var food = { x: (Math.floor(Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box,
-             y: (Math.floor(Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box };
+var food = { x: 15 * box, y: 15 * box };
 var score = 0;
 var normalScore = 0;
 var hardScore = 0;
@@ -43,7 +42,7 @@ var currentMode;
 function switchMode(mode) {
     currentMode = mode;
     if (mode == 'normalMode') {
-        speed = 300;
+        speed = 250;
     } else if (mode == 'hardMode') {
         speed = 200;
     }
@@ -98,13 +97,52 @@ function gameSpeed() {
 $("#normalBtn").on("click", function () {
     switchMode('normalMode');
 
+    var scoreDisplay = document.getElementById("score");
+    if(scoreDisplay) {
+        scoreDisplay.innerText = 'Normal SCORE: ' + normalScore;
+    } else {
+        console.error("Score display element not found.");
+    }
+
+    var bestScoreDisplay = document.getElementById("bestScore");
+    if(bestScoreDisplay) {
+        bestScoreDisplay.innerText = 'BEST SCORE: ' + bestScore;
+    } else {
+        console.error("Best score display element not found.");
+    }
+
+    $("#score").show();
+    $("#bestScore").show();
+    $("#cBtn").show();
+    $("#h1").hide();
+
     $("#normalBtn").css("display", "none");
     $("#hardBtn").css("display", "none");
     $("#nPopup").css("display", "block");
+    $("#cBtn").off("click", cBtnClick);
 });
 
 $("#hardBtn").on("click", function () {
     switchMode('hardMode');
+
+    var scoreDisplay = document.getElementById("score");
+    if(scoreDisplay) {
+        scoreDisplay.innerText = 'Hard SCORE: ' + hardScore;
+    } else {
+        console.error("Score display element not found.");
+    }
+
+    var bestScoreDisplay = document.getElementById("bestScore");
+    if(bestScoreDisplay) {
+        bestScoreDisplay.innerText = 'BEST SCORE: ' + bestScore;
+    } else {
+        console.error("Best score display element not found.");
+    }
+
+    $("#score").show();
+    $("#bestScore").show();
+    $("#cBtn").show();
+    $("#h1").hide();
 
     $("#normalBtn").css("display", "none");
     $("#hardBtn").css("display", "none");
@@ -117,6 +155,11 @@ $("#cBtn1").on("click", function () {
     $("#hardBtn").css("display", "block");
     $("#nPopup").css("display", "none");
     $("#cBtn").off("click", cBtnClick);
+    $("#h1").css("display", "block");
+
+    $("#score").hide();
+    $("#bestScore").hide();
+    $("#cBtn").hide();
 });
 
 $("#score").hide();
@@ -135,6 +178,7 @@ function startGame() {
     $("#score").show();
     $("#bestScore").show();
     $("#cBtn").show();
+    $("#cBtn").css("cursor", "pointer");
 }
 
 function resetGame() {
@@ -148,6 +192,7 @@ function resetGame() {
     speeds = 0.9;
     gameOver = false;
     gameStarted = false;
+    food = { x: 15 * box, y: 15 * box };
     specialFood = { x: 0, y: 0, active: false };
     bombFood = { x: 0, y: 0, active: false };
     foodEatenCount = 0;
@@ -169,7 +214,19 @@ function resetGame() {
 
     $("#cBtn").off("click", cBtnClick);
     $("#cBtn").on("click", cBtnClick);
-    $(document).off("keydown", direction);
+    // $(document).off("keydown", direction);
+}
+
+function generateItem(existingItems) {
+    var newItem;
+    do {
+        newItem = {
+            x: Math.floor((Math.random() *  ((canvasWidth - 2 * box) / box)) + 1) * box,
+            y: Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box
+        };
+    } while (collision(newItem, existingItems)); // 겹치는지 확인
+
+    return newItem;
 }
 
 function draw() {
@@ -198,9 +255,10 @@ function draw() {
         hardScore += 10;
         foodEatenCount++;
         
-        food = { x: (Math.floor(Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box,
-                 y: (Math.floor(Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box };
+        food = generateItem(snake);
         
+        eatSound.pause();
+        eatSound.currentTime = 0;
         eatSound.play();
 
         if (specialFood.active) {
@@ -208,8 +266,7 @@ function draw() {
         }
 
         if(foodEatenCount % 5 == 0) {
-            specialFood.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
-            specialFood.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
+            specialFood = generateItem(snake);
             specialFood.active = true;
         }
 
@@ -218,18 +275,15 @@ function draw() {
         }
 
         if (currentMode === 'hardMode') {
-            bombFood.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
-            bombFood.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
+            bombFood = generateItem(snake);
             bombFood.active = true;
             console.log('1');
 
-            bombFood2.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
-            bombFood2.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
+            bombFood2 = generateItem(snake);
             bombFood2.active = true;
             console.log('2');
 
-            bombFood3.x = Math.floor((Math.random() * ((canvasWidth - 2 * box) / box)) + 1) * box;
-            bombFood3.y = Math.floor((Math.random() * ((canvasHeight - 2 * box) / box)) + 1) * box;
+            bombFood3 = generateItem(snake);
             bombFood3.active = true;
             console.log('3');
         }
@@ -302,6 +356,24 @@ function draw() {
         }
     }
 
+    var scoreDisplay = document.getElementById("score");
+    if(scoreDisplay) {
+        if (currentMode === 'normalMode') {
+            scoreDisplay.innerText = 'Normal SCORE: ' + normalScore;
+        } else if (currentMode === 'hardMode') {
+            scoreDisplay.innerText = 'Hard SCORE: ' + normalScore;
+        }
+    } else {
+        console.error("Score display element not found.");
+    }
+
+    var bestScoreDisplay = document.getElementById("bestScore");
+    if(bestScoreDisplay) {
+        bestScoreDisplay.innerText = 'BEST SCORE: ' + bestScore;
+    } else {
+        console.error("Best score display element not found.");
+    }
+
     var newHead = { x: snakeX, y: snakeY };
 
     if (snakeX < 0 || snakeX >= canvasWidth || snakeY < 0 || snakeY >= canvasHeight) {
@@ -319,39 +391,26 @@ function draw() {
     }
 
     snake.unshift(newHead);
-
-    var scoreDisplay = document.getElementById("score");
-    if(scoreDisplay) {
-        if (currentMode === 'normalMode') {
-            scoreDisplay.innerText = 'Normal SCORE: ' + normalScore;
-        } else if (currentMode ==='hardMode') {
-            scoreDisplay.innerText = 'Hard SCORE: ' + hardScore;
-        }
-        
-    } else {
-        console.error("Score display element not found.");
-    }
-
-    var bestScoreDisplay = document.getElementById("bestScore");
-    if(bestScoreDisplay) {
-        bestScoreDisplay.innerText = 'BEST SCORE: ' + bestScore;
-    } else {
-        console.error("Best score display element not found.");
-    }
 }
 
 function endGame() {
 
     clearInterval(game);
-    console.log("GameOver!");
 
     backgroundMusic.pause();
     backgroundMusic.currentTime = 0;
 
+    // if (currentMode === 'normalMode') {
+    //     $("#normal-final-score").text("SCORE: " + normalScore);
+    //     console.log(currentMode);
+    // } else if (currentMode === 'hardMode') {
+    //     console.log(currentMode);
+    //     $("#hard-final-score").text("SCORE: " + hardScore);
+    // }
     if (currentMode === 'normalMode') {
-        $("#normal-final-score").text("Normal SCORE: " + normalScore);
+        $("#final-score").text("SCORE: " + normalScore);
     } else if (currentMode === 'hardMode') {
-        $("#hard-final-score").text("Hard SCORE: " + hardScore);
+        $("#final-score").text("SCORE: " + hardScore);
     }
 
     if ((currentMode === 'normalMode' && normalScore > bestScore) ||
@@ -363,7 +422,8 @@ function endGame() {
     $("#best-score").text("BEST SCORE: " + bestScore);
     $("#goPopup").css("display", "block");
 
-    $("#cBtn").off("click");
+    $("#cBtn").off("click", cBtnClick);
+    $("#cBtn").css("cursor", "default");
 
 
     $(document).on("click", "#rBtn", function() {
